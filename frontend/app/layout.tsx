@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-provider";
 import { Navbar } from "@/components/common/navbar";
 import { PostHogProviderContext } from "@/contexts/posthogProvider";
+import { env } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
