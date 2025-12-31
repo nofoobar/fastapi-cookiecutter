@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-provider";
 import { Navbar } from "@/components/common/navbar";
 import { PostHogProviderContext } from "@/contexts/posthogProvider";
-import { env } from "@/lib/config";
+import { GoogleTagManagerProvider } from "@/contexts/googleTagManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,8 +33,10 @@ export default function RootLayout({
       >
         <ThemeProvider defaultTheme="system" storageKey="theme">
           <PostHogProviderContext>
-            <Navbar />
-            {children}
+            <GoogleTagManagerProvider>
+              <Navbar />
+              {children}
+            </GoogleTagManagerProvider>
           </PostHogProviderContext>
         </ThemeProvider>
       </body>
