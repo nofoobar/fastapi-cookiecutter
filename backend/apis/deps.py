@@ -1,6 +1,6 @@
 import jwt
 from typing import Generator, Optional
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlmodel import Session, select
 from database.db import engine
 from database.models.user import User
@@ -18,8 +18,11 @@ def get_db() -> Generator[Session, None, None]:
         yield session
 
 
-def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
-    """Get the current authenticated user or None if not authenticated."""
+def get_current_user(request: Request, token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
+    if not token:
+        # Fall back to cookie if token is not in the header
+        token = request.cookies.get("access_token")
+
     if not token:
         return None
         

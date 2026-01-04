@@ -7,6 +7,7 @@ import { PostHogProviderContext } from "@/contexts/posthogProvider";
 import { GoogleTagManagerProvider } from "@/contexts/googleTagManager";
 import CrispChat from "@/components/common/crispChat";  
 import QueryClientProvider from "@/contexts/queryClientProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,13 +36,15 @@ export default function RootLayout({
       >
         <ThemeProvider defaultTheme="system" storageKey="theme">
           <QueryClientProvider>
-            <PostHogProviderContext>
-              <GoogleTagManagerProvider>
-                <Navbar />
-                {children}
-                <CrispChat />
-                </GoogleTagManagerProvider>
-            </PostHogProviderContext>
+            <AuthProvider>
+              <PostHogProviderContext>
+                <GoogleTagManagerProvider>
+                  <Navbar />
+                  {children}
+                  <CrispChat />
+                  </GoogleTagManagerProvider>
+              </PostHogProviderContext>
+            </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </body>

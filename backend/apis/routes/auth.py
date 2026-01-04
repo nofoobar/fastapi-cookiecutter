@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 from apis.deps import get_db
 from database.models.user import User
@@ -14,7 +15,7 @@ from utils.constants import constants
 from apis.deps import get_current_user
 
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
 @router.post("/signup", response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
@@ -46,15 +47,20 @@ async def signup(request: Request, user_data: UserSignupRequest, db: Session = D
     db.refresh(user)
     
     access_token = create_access_token(data={"sub": str(user.id)})
-    return SignupResponse(
-        user=UserResponse.model_validate(user),
-        token=TokenResponse(
-            access_token=access_token,
-        )
+    response = JSONResponse(content={"user": UserResponse.model_validate(user), "access_token": access_token})
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        expires=constants.ACCESS_TOKEN_EXPIRE_MINUTES,
+        secure=True,
+        samesite="none",
+        httponly=True, 
+        path="/"
     )
+    return response
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login")
 @limiter.limit(constants.SLOW_RATE_LIMIT)
 async def login(request: Request, login_data: UserLoginRequest, db: Session = Depends(get_db)):
     user = db.exec(select(User).where((User.username == login_data.username.lower()) | (User.email == login_data.username))).first()
@@ -69,7 +75,17 @@ async def login(request: Request, login_data: UserLoginRequest, db: Session = De
         )
     
     access_token = create_access_token(data={"sub": str(user.id)})    
-    return TokenResponse(access_token=access_token)
+    response = JSONResponse(content={"access_token": access_token})
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        expires=constants.ACCESS_TOKEN_EXPIRE_MINUTES,
+        secure=True,
+        samesite="none",
+        httponly=True, 
+        path="/"
+    )
+    return response
 
 
 @router.get("/me", response_model=UserResponse)

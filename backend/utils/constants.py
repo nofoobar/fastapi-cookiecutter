@@ -7,6 +7,7 @@ class Constants:
     LOW_TEMPERATURE = 0.8
     ONE_PER_ONE_MINUTE = "1/minute"
     SLOW_RATE_LIMIT = "5/minute"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60 * 60  # 30 days in seconds
 
 
 constants = Constants()
