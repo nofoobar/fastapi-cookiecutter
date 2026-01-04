@@ -6,6 +6,7 @@ class Constants:
     HIGH_TEMPERATURE = 1.2
     LOW_TEMPERATURE = 0.8
     ONE_PER_ONE_MINUTE = "1/minute"
+    SLOW_RATE_LIMIT = "5/minute"
 
 
 constants = Constants()

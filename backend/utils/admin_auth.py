@@ -1,7 +1,7 @@
 import os
 from fastapi import Request
 from sqladmin.authentication import AuthenticationBackend
-from database.get_db import get_db
+from apis.deps import get_db
 from database.models.user import User
 
 

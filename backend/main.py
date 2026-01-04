@@ -9,10 +9,12 @@ from utils.mailer import send_email
 from utils.admin_auth import AdminAuth
 from admin.user import UserAdmin
 from sqladmin import Admin
-from database.get_db import engine
+from database.db import engine
+from apis.base import router as api_router
 
 
 app = FastAPI(title=settings.APP_NAME, description=settings.APP_DESCRIPTION, docs_url="/api/docs")
+app.include_router(api_router)
 admin = Admin(app, engine, authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY))
 admin.add_view(UserAdmin)
 
