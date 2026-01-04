@@ -11,5 +11,5 @@ WORKDIR /app
 COPY Pipfile Pipfile.lock ./
 RUN pipenv install --system --deploy
 
-COPY ./app ./app
+COPY . .
 EXPOSE 8000

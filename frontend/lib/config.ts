@@ -7,6 +7,8 @@ const envSchema = z.object({
 
   NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ENABLED: z.enum(['true', 'false']).default('false'),
   NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: z.string().optional(),
+
+  NEXT_PUBLIC_CRISP_WEBSITE_ID: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ENABLED === 'true' && !data.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID) {
     ctx.addIssue({

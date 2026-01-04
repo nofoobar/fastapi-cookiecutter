@@ -1,13 +1,20 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from core.config import settings
 from utils.completion import text_completion_with_tracing
 from schemas.completion import CompletionRequest
 from utils.rate_limiter import limiter
 from utils.constants import constants
+from schemas.mailer import EmailRequest
+from utils.mailer import send_email
+from utils.admin_auth import AdminAuth
+from admin.user import UserAdmin
+from sqladmin import Admin
+from database.get_db import engine
 
 
 app = FastAPI(title=settings.APP_NAME, description=settings.APP_DESCRIPTION, docs_url="/api/docs")
-
+admin = Admin(app, engine, authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY))
+admin.add_view(UserAdmin)
 
 @app.get("/")
 async def root(request: Request):
@@ -24,3 +31,11 @@ async def completion(request: Request, data: CompletionRequest):
     ]
     response = text_completion_with_tracing(messages, data.model)
     return {"response": response.choices[0].message.content}
+
+
+@app.post("/email")
+@limiter.limit(constants.ONE_PER_ONE_MINUTE)
+def send_email_api(request: Request, data: EmailRequest):
+    send_email(data.to_email, data.subject, data.body)
+    return Response(status_code=200)
+    
